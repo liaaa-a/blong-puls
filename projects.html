@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>我的作品</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600&display=swap');
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, #fdf2f8 0%, #e9d5ff 100%);
+        }
+
+        .project-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .project-card:hover::before {
+            opacity: 1;
+        }
+
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-title {
+            background: linear-gradient(120deg, #4f46e5 0%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-6 bg-fixed">
+    <div class="w-full max-w-3xl">
+        <h1 class="text-4xl font-semibold text-center mb-12 text-gray-800 tracking-wide">我的作品集</h1>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+            <!-- 励志语录项目 -->
+            <a href="./.liizhi.html" class="project-card block bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl">
+                <div class="flex items-start space-x-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-white text-xl font-light">✨</div>
+                    <div class="flex-1">
+                        <h2 class="project-title text-xl font-semibold mb-2">加油吧</h2>
+                        <p class="text-gray-600 text-sm leading-relaxed">每日一句温暖hearted励志语录，让积极的能量伴随你前行。</p>
+                        <div class="mt-4 flex items-center text-sm text-purple-500">
+                            <span>探索更多</span>
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 英雄百科项目 -->
+            <a href="./lol.htm" class="project-card block bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl">
+                <div class="flex items-start space-x-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-xl font-light">🎮</div>
+                    <div class="flex-1">
+                        <h2 class="project-title text-xl font-semibold mb-2">英雄百科</h2>
+                        <p class="text-gray-600 text-sm leading-relaxed">探索英雄联盟的奇妙世界，了解每位英雄的独特故事与技能。</p>
+                        <div class="mt-4 flex items-center text-sm text-indigo-500">
+                            <span>查看详情</span>
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="text-center mt-12">
+            <a href="index.html" class="inline-flex items-center px-6 py-3 rounded-full bg-white/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all text-gray-700 hover:text-gray-900">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                返回主页
+            </a>
+        </div>
+    </div>
+</body>
+
+</html>

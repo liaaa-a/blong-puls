@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>英雄详情</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background: #f2f2f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .ios-card {
+            background: #fff;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.06);
+            border: 1px solid #f4f4f4;
+        }
+
+        .tab-btn:checked+label {
+            color: #2563eb;
+            font-weight: 600;
+            border-bottom: 2.5px solid #2563eb;
+            background: #f1f5ff;
+        }
+
+        .tab-btn+label {
+            transition: all .2s;
+            cursor: pointer;
+            padding: 0.5rem 1.2rem;
+            border-radius: 1rem 1rem 0 0;
+            margin-right: 0.5rem;
+            display: inline-block;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn .4s;
+        }
+
+        #tab1:checked~.tab-contents #content1,
+        #tab2:checked~.tab-contents #content2,
+        #tab3:checked~.tab-contents #content3 {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 滚动条隐藏 */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen pb-8">
+    <!-- 顶部导航 -->
+    <!-- 修改顶部导航栏中的返回链接 -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+            <a href="lol.htm" class="text-blue-500 text-lg"><i class="fas fa-chevron-left"></i></a>
+            <h1 class="text-xl font-semibold text-gray-800">英雄详情</h1>
+            <span class="w-8"></span>
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto px-4 py-4">
+        <!-- 英雄基础信息卡片 -->
+        <section class="ios-card p-5 mb-5 w-full max-w-full overflow-hidden">
+            <div class="flex items-center w-full max-w-full overflow-hidden">
+                <img src="https://www.loliapi.com/acg/pp/" alt="英雄头像"
+                    class="w-20 h-20 rounded-2xl object-cover shadow-md border border-gray-200 flex-shrink-0">
+                <div class="ml-5 flex-1 min-w-0">
+                    <div class="flex items-center mb-1 flex-wrap">
+                        <span class="text-2xl font-bold text-gray-900 mr-2">安妮</span>
+                        <span class="text-base text-gray-500">黑暗之女</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 mt-1">
+                        <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">法师</span>
+                        <span class="bg-yellow-400 text-white text-xs px-2 py-1 rounded-full">4800金币</span>
+                        <span class="bg-pink-400 text-white text-xs px-2 py-1 rounded-full">2000点券</span>
+                        <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">永久周免</span>
+                    </div>
+                    <div class="flex flex-wrap items-center mt-2 text-xs text-gray-500">
+                        <i class="fas fa-bolt text-yellow-400 mr-1"></i> 难度：<span
+                            class="ml-1 text-gray-700 font-semibold">6</span>
+                        <span class="mx-2">|</span>
+                        <i class="fas fa-shield-alt text-blue-400 mr-1"></i> 防御：<span
+                            class="ml-1 text-gray-700 font-semibold">3</span>
+                        <span class="mx-2">|</span>
+                        <i class="fas fa-fire text-red-400 mr-1"></i> 攻击：<span
+                            class="ml-1 text-gray-700 font-semibold">2</span>
+                        <span class="mx-2">|</span>
+                        <i class="fas fa-magic text-purple-400 mr-1"></i> 法术：<span
+                            class="ml-1 text-gray-700 font-semibold">10</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 text-gray-600 text-sm leading-relaxed">
+                <span class="font-semibold text-gray-800">简介：</span>
+                安妮是一位拥有强大火焰魔法的法师，能够召唤她的熊伙伴提伯斯。她以高爆发和控制能力著称，适合中单位置。
+            </div>
+        </section>
+
+        <!-- tab切换区 -->
+        <section class="mb-5">
+            <input type="radio" id="tab1" name="tab" class="tab-btn" checked hidden>
+            <label for="tab1">属性</label>
+            <input type="radio" id="tab2" name="tab" class="tab-btn" hidden>
+            <label for="tab2">皮肤</label>
+            <input type="radio" id="tab3" name="tab" class="tab-btn" hidden>
+            <label for="tab3">技能</label>
+            <div class="tab-contents mt-2">
+                <!-- 属性内容 -->
+                <div id="content1" class="tab-content">
+                    <div class="ios-card p-4">
+                        <div class="grid grid-cols-2 gap-4 text-sm text-gray-700">
+                            <div>生命值：<span class="font-semibold">524</span></div>
+                            <div>成长生命：<span class="font-semibold">88</span></div>
+                            <div>法力值：<span class="font-semibold">418</span></div>
+                            <div>成长法力：<span class="font-semibold">25</span></div>
+                            <div>攻击力：<span class="font-semibold">50.41</span></div>
+                            <div>成长攻击：<span class="font-semibold">2.625</span></div>
+                            <div>护甲：<span class="font-semibold">19.22</span></div>
+                            <div>成长护甲：<span class="font-semibold">4</span></div>
+                            <div>攻击速度：<span class="font-semibold">0.579</span></div>
+                            <div>成长攻速：<span class="font-semibold">1.36%</span></div>
+                            <div>攻击距离：<span class="font-semibold">625</span></div>
+                            <div>暴击：<span class="font-semibold">0</span></div>
+                            <div>成长暴击：<span class="font-semibold">0</span></div>
+                            <div>移速：<span class="font-semibold">335</span></div>
+                            <div>魔法抗性：<span class="font-semibold">30</span></div>
+                            <div>成长魔抗：<span class="font-semibold">0.5</span></div>
+                        </div>
+                        <div class="mt-4 text-xs text-gray-500">
+                            <span class="font-semibold text-gray-700">英雄定位：</span> 法师 / 爆发 / 控制
+                        </div>
+                        <div class="mt-2 text-xs text-gray-500">
+                            <span class="font-semibold text-gray-700">关键词：</span> 安妮, 黑暗之女, 火女, Annie, anni, heianzhinv,
+                            huonv, an, hazn, hn
+                        </div>
+                    </div>
+                </div>
+                <!-- 皮肤内容 -->
+                <div id="content2" class="tab-content">
+                    <div class="ios-card p-4">
+                        <div class="flex overflow-x-auto hide-scrollbar gap-4">
+                            <div class="flex-shrink-0 w-36">
+                                <img src="https://www.loliapi.com/acg/" alt="皮肤1"
+                                    class="rounded-xl w-full h-28 object-cover shadow">
+                                <div class="mt-2 text-center text-xs text-gray-700">经典皮肤</div>
+                            </div>
+                            <div class="flex-shrink-0 w-36">
+                                <img src="https://www.loliapi.com/acg/" alt="皮肤2"
+                                    class="rounded-xl w-full h-28 object-cover shadow">
+                                <div class="mt-2 text-center text-xs text-gray-700">安妮梦游仙境</div>
+                            </div>
+                            <div class="flex-shrink-0 w-36">
+                                <img src="https://www.loliapi.com/acg/" alt="皮肤3"
+                                    class="rounded-xl w-full h-28 object-cover shadow">
+                                <div class="mt-2 text-center text-xs text-gray-700">安妮熊抱</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 技能内容 -->
+                <div id="content3" class="tab-content">
+                    <div class="ios-card p-4 space-y-4">
+                        <div class="flex items-start gap-3">
+                            <img src="https://www.loliapi.com/acg/pp/" alt="被动"
+                                class="w-10 h-10 rounded-lg object-cover border border-gray-200">
+                            <div>
+                                <div class="font-semibold text-gray-800">被动 - 燃烧</div>
+                                <div class="text-xs text-gray-600 mt-1">每施放4个技能后，安妮的下一个技能会眩晕敌人。</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="https://www.loliapi.com/acg/pp/" alt="Q"
+                                class="w-10 h-10 rounded-lg object-cover border border-gray-200">
+                            <div>
+                                <div class="font-semibold text-gray-800">Q - 破碎之火</div>
+                                <div class="text-xs text-gray-600 mt-1">对目标造成魔法伤害，击杀单位返还法力并减少冷却。</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="https://www.loliapi.com/acg/pp/" alt="W"
+                                class="w-10 h-10 rounded-lg object-cover border border-gray-200">
+                            <div>
+                                <div class="font-semibold text-gray-800">W - 焚烧</div>
+                                <div class="text-xs text-gray-600 mt-1">对扇形范围内敌人造成魔法伤害。</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="https://www.loliapi.com/acg/pp/" alt="E"
+                                class="w-10 h-10 rounded-lg object-cover border border-gray-200">
+                            <div>
+                                <div class="font-semibold text-gray-800">E - 熔岩护盾</div>
+                                <div class="text-xs text-gray-600 mt-1">获得护盾并对攻击者造成魔法伤害。</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="https://www.loliapi.com/acg/pp/" alt="R"
+                                class="w-10 h-10 rounded-lg object-cover border border-gray-200">
+                            <div>
+                                <div class="font-semibold text-gray-800">R - 提伯斯之怒</div>
+                                <div class="text-xs text-gray-600 mt-1">召唤提伯斯，对范围内敌人造成大量魔法伤害。</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 英雄小贴士 -->
+        <section class="ios-card p-4 mb-5">
+            <div class="font-semibold text-gray-800 mb-2">使用建议</div>
+            <ul class="list-disc pl-5 text-sm text-gray-600 space-y-1">
+                <li>利用被动技能的眩晕效果，配合大招打出爆发。</li>
+                <li>Q技能补刀可返还法力，合理利用。</li>
+                <li>W技能可用于清线和消耗。</li>
+            </ul>
+            <div class="font-semibold text-gray-800 mt-4 mb-2">对抗建议</div>
+            <ul class="list-disc pl-5 text-sm text-gray-600 space-y-1">
+                <li>注意安妮的被动层数，避免被控。</li>
+                <li>保持距离，防止被大招秒杀。</li>
+            </ul>
+        </section>
+
+        <!-- 英雄语音试听（仅样式，纯CSS无JS） -->
+        <section class="ios-card p-4 flex items-center gap-4">
+            <div class="flex-shrink-0">
+                <img src="https://www.loliapi.com/acg/pp/" alt="语音"
+                    class="w-12 h-12 rounded-xl object-cover border border-gray-200">
+            </div>
+            <div class="flex-1">
+                <div class="text-gray-800 font-semibold text-sm">英雄语音试听</div>
+                <div class="text-xs text-gray-500 mt-1">点击下方按钮可试听英雄选中/禁用语音</div>
+                <div class="flex gap-2 mt-2">
+                    <a href="#"
+                        class="inline-flex items-center px-3 py-1.5 rounded-lg bg-blue-500 text-white text-xs font-semibold shadow hover:bg-blue-600 transition">
+                        <i class="fas fa-volume-up mr-1"></i> 选中语音
+                    </a>
+                    <a href="#"
+                        class="inline-flex items-center px-3 py-1.5 rounded-lg bg-gray-400 text-white text-xs font-semibold shadow hover:bg-gray-500 transition">
+                        <i class="fas fa-volume-mute mr-1"></i> 禁用语音
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+// 在 </body> 标签前添加以下 JavaScript 代码
+<script>
+    // 获取 URL 中的英雄 ID 参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const heroId = urlParams.get('id');
+
+    // 获取英雄详情数据
+    async function fetchHeroDetail() {
+        try {
+            const response = await fetch(`https://hmajax.itheima.net/api/lol/info?id=${heroId}`);
+            const data = await response.json();
+            if (data.code === 200) {
+                updateHeroInfo(data.data);
+            } else {
+                console.error('获取英雄详情失败:', data.msg);
+            }
+        } catch (error) {
+            console.error('请求失败:', error);
+        }
+    }
+
+    // 更新英雄信息
+    function updateHeroInfo(data) {
+        const { hero, skins, spells } = data;
+
+        // 更新基础信息
+        document.querySelector('img[alt="英雄头像"]').src = hero.icon;
+        document.querySelector('.text-2xl.font-bold').textContent = hero.name;
+        document.querySelector('.text-base.text-gray-500').textContent = hero.title;
+
+        // 更新标签
+        const tagsContainer = document.querySelector('.flex.flex-wrap.items-center.gap-2.mt-1');
+        tagsContainer.innerHTML = '';
+        hero.roles.forEach(role => {
+            tagsContainer.innerHTML += `<span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">${role}</span>`;
+        });
+        tagsContainer.innerHTML += `
+            <span class="bg-yellow-400 text-white text-xs px-2 py-1 rounded-full">${hero.goldPrice}金币</span>
+            <span class="bg-pink-400 text-white text-xs px-2 py-1 rounded-full">${hero.couponPrice}点券</span>
+            ${hero.isWeekFree === '1' ? '<span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">周免</span>' : ''}
+        `;
+
+        // 更新属性
+        document.querySelector('span.ml-1.text-gray-700.font-semibold').textContent = hero.difficulty;
+        document.querySelectorAll('span.ml-1.text-gray-700.font-semibold')[1].textContent = hero.defense;
+        document.querySelectorAll('span.ml-1.text-gray-700.font-semibold')[2].textContent = hero.attack;
+        document.querySelectorAll('span.ml-1.text-gray-700.font-semibold')[3].textContent = hero.magic;
+
+        // 更新英雄简介
+        document.querySelector('.mt-4.text-gray-600.text-sm.leading-relaxed').innerHTML = 
+            `<span class="font-semibold text-gray-800">简介：</span>${hero.shortBio}`;
+
+        // 更新详细属性
+        const statsContainer = document.querySelector('.grid.grid-cols-2.gap-4.text-sm.text-gray-700');
+        statsContainer.innerHTML = `
+            <div>生命值：<span class="font-semibold">${hero.hp}</span></div>
+            <div>成长生命：<span class="font-semibold">${hero.hpperlevel}</span></div>
+            <div>法力值：<span class="font-semibold">${hero.mp}</span></div>
+            <div>成长法力：<span class="font-semibold">${hero.mpperlevel}</span></div>
+            <div>攻击力：<span class="font-semibold">${hero.attackdamage}</span></div>
+            <div>成长攻击：<span class="font-semibold">${hero.attackdamageperlevel}</span></div>
+            <div>护甲：<span class="font-semibold">${hero.armor}</span></div>
+            <div>成长护甲：<span class="font-semibold">${hero.armorperlevel}</span></div>
+            <div>攻击速度：<span class="font-semibold">${hero.attackspeed}</span></div>
+            <div>成长攻速：<span class="font-semibold">${hero.attackspeedperlevel}</span></div>
+            <div>攻击距离：<span class="font-semibold">${hero.attackrange}</span></div>
+            <div>暴击：<span class="font-semibold">${hero.crit}</span></div>
+            <div>成长暴击：<span class="font-semibold">${hero.critperlevel}</span></div>
+            <div>移速：<span class="font-semibold">${hero.movespeed}</span></div>
+            <div>魔法抗性：<span class="font-semibold">${hero.spellblock}</span></div>
+            <div>成长魔抗：<span class="font-semibold">${hero.spellblockperlevel}</span></div>
+        `;
+
+        // 更新皮肤信息
+        const skinsContainer = document.querySelector('.flex.overflow-x-auto.hide-scrollbar.gap-4');
+        skinsContainer.innerHTML = skins.map(skin => `
+            <div class="flex-shrink-0 w-36">
+                <img src="${skin.mainImg}" alt="${skin.name}"
+                    class="rounded-xl w-full h-28 object-cover shadow">
+                <div class="mt-2 text-center text-xs text-gray-700">${skin.name}</div>
+            </div>
+        `).join('');
+
+        // 更新技能信息
+        const spellsContainer = document.querySelector('.ios-card.p-4.space-y-4');
+        spellsContainer.innerHTML = spells.map(spell => `
+            <div class="flex items-start gap-3">
+                <img src="${spell.abilityIconPath}" alt="${spell.spellKey}"
+                    class="w-10 h-10 rounded-lg object-cover border border-gray-200">
+                <div>
+                    <div class="font-semibold text-gray-800">${spell.spellKey} - ${spell.name}</div>
+                    <div class="text-xs text-gray-600 mt-1">${spell.description}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // 页面加载完成后获取英雄详情
+    document.addEventListener('DOMContentLoaded', () => {
+        if (heroId) {
+            fetchHeroDetail();
+        } else {
+            console.error('未找到英雄ID参数');
+        }
+    });
+</script>
+</body>
+
+</html>
