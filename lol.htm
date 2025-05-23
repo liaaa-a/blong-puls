@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英雄列表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+
+        :root {
+            --primary-color: #007AFF;
+            --secondary-color: #5856D6;
+            --background-color: #F2F2F7;
+            --card-background: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--background-color);
+        }
+
+        .hero-card {
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+
+        .hero-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .hero-card:hover .hero-image {
+            filter: brightness(1.1);
+        }
+
+        .hero-image {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .hero-card:hover .hero-image {
+            transform: scale(1.1);
+            filter: brightness(1.1) contrast(1.1);
+        }
+
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(0,122,255,0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .hero-card:hover::before {
+            opacity: 1;
+        }
+
+        .hero-card:active {
+            transform: scale(0.98);
+        }
+
+        .hero-card:active .hero-image {
+            transform: scale(1.05);
+        }
+
+        .hero-card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hero-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to right,
+                transparent 0%,
+                rgba(255,255,255,0.2) 50%,
+                transparent 100%
+            );
+            transition: left 0.5s ease;
+            pointer-events: none;
+        }
+
+        .hero-card:hover::after {
+            left: 100%;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .hero-card:hover {
+            animation: pulse 2s infinite;
+            box-shadow: 0 8px 24px rgba(0, 122, 255, 0.15);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-6">
+    <!-- 顶部导航栏 -->
+    <header class="fixed top-0 left-0 right-0 bg-white/80 glass-effect z-50 border-b border-gray-200">
+        <div class="max-w-4xl mx-auto px-4 py-3">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-4">
+                    <a href="projects.html" class="text-blue-500 hover:text-blue-600 transition">
+                        <i class="fas fa-chevron-left text-lg"></i>
+                    </a>
+                    <h1 class="text-xl font-bold text-gray-800">英雄列表</h1>
+                </div>
+                <button class="text-blue-500 hover:text-blue-600 transition" id="filterBtn">
+                    <i class="fas fa-filter text-lg"></i>
+                </button>
+            </div>
+            <!-- 搜索栏 -->
+            <div class="relative mb-3">
+                <input type="search" 
+                       id="searchInput"
+                       placeholder="搜索英雄名称" 
+                       class="w-full px-4 py-2 rounded-xl bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            </div>
+            <!-- 分类标签 -->
+            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" id="roleFilter">
+                <button class="tag px-4 py-1 rounded-full bg-blue-500 text-white text-sm whitespace-nowrap" data-role="all">全部</button>
+                <button class="tag px-4 py-1 rounded-full bg-gray-100 text-gray-600 text-sm whitespace-nowrap" data-role="fighter">战士</button>
+                <button class="tag px-4 py-1 rounded-full bg-gray-100 text-gray-600 text-sm whitespace-nowrap" data-role="mage">法师</button>
+                <button class="tag px-4 py-1 rounded-full bg-gray-100 text-gray-600 text-sm whitespace-nowrap" data-role="assassin">刺客</button>
+                <button class="tag px-4 py-1 rounded-full bg-gray-100 text-gray-600 text-sm whitespace-nowrap" data-role="marksman">射手</button>
+                <button class="tag px-4 py-1 rounded-full bg-gray-100 text-gray-600 text-sm whitespace-nowrap" data-role="tank">坦克</button>
+                <button class="tag px-4 py-1 rounded-full bg-gray-100 text-gray-600 text-sm whitespace-nowrap" data-role="support">辅助</button>
+            </div>
+        </div>
+    </header>
+
+    <style>
+        .hero-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            .hero-container {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+        }
+
+        .hero-card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hero-image {
+            aspect-ratio: 1;
+            width: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+    </style>
+
+    <!-- 主要内容区 -->
+    <main class="max-w-4xl mx-auto pt-40 pb-20">
+        <div class="hero-container" id="heroList">
+            <!-- 英雄卡片将通过JavaScript动态生成 -->
+        </div>
+    </main>
+
+    <!-- 底部导航栏 -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-white/80 glass-effect border-t border-gray-200">
+        <div class="max-w-4xl mx-auto px-4 py-2">
+            <div class="flex justify-around items-center">
+                <a href="#" class="text-blue-500 flex flex-col items-center">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="text-xs mt-1">首页</span>
+                </a>
+                <a href="#" class="text-gray-400 flex flex-col items-center">
+                    <i class="fas fa-compass text-xl"></i>
+                    <span class="text-xs mt-1">发现</span>
+                </a>
+                <a href="#" class="text-gray-400 flex flex-col items-center">
+                    <i class="fas fa-star text-xl"></i>
+                    <span class="text-xs mt-1">收藏</span>
+                </a>
+                <a href="#" class="text-gray-400 flex flex-col items-center">
+                    <i class="fas fa-user text-xl"></i>
+                    <span class="text-xs mt-1">我的</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        /* 雪花样式 */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            color: white;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+            animation: snowfall linear forwards;
+            z-index: 1;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        @keyframes snowfall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-6">
+    <!-- 顶部导航栏 -->
+    <header class="fixed top-0 left-0 right-0 bg-white/80 glass-effect z-50 border-b border-gray-200">
+        <div class="max-w-4xl mx-auto px-4 py-3">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-4">
+                    <a href="projects.html" class="text-blue-500 hover:text-blue-600 transition">
+                        <i class="fas fa-chevron-left text-lg"></i>
+                    </a>
+                    <h1 class="text-xl font-bold text-gray-800">英雄列表</h1>
+                </div>
+                <button class="text-blue-500 hover:text-blue-600 transition" id="filterBtn">
+                    <i class="fas fa-filter text-lg"></i>
+                </button>
+            </div>
+            <!-- 搜索栏 -->
+            <div class="relative mb-3">
+                <input type="search" 
+                       id="searchInput"
+                       placeholder="搜索英雄名称" 
+                       class="w-full px-4 py-2 rounded-xl bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            </div>
+            <!-- 分类标签 -->
+            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" id="roleFilter">
+                <button class="tag px-4 py-1 rounded-full bg-blue-500 text-white text-sm whitespace-nowrap" data-role="all">全部</button>
+                <button class="tag px-4 py-1 rounded-full bg-gray-100 text-gray-600 text-sm whitespace-nowrap" data-role="fighter">战士</button>
+                <button class="tag px-4 py-1 rounded-full bg-gray-100 text-gray-600 text-sm whitespace-nowrap" data-role="mage">法师</button>
+                <button class="tag px-4 py-1 rounded-full bg-gray-100 text-gray-600 text-sm whitespace-nowrap" data-role="assassin">刺客</button>
+                <button class="tag px-4 py-1 rounded-full bg-gray-100 text-gray-600 text-sm whitespace-nowrap" data-role="marksman">射手</button>
+                <button class="tag px-4 py-1 rounded-full bg-gray-100 text-gray-600 text-sm whitespace-nowrap" data-role="tank">坦克</button>
+                <button class="tag px-4 py-1 rounded-full bg-gray-100 text-gray-600 text-sm whitespace-nowrap" data-role="support">辅助</button>
+            </div>
+        </div>
+    </header>
+
+    <style>
+        .hero-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            .hero-container {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+        }
+
+        .hero-card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hero-image {
+            aspect-ratio: 1;
+            width: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+    </style>
+
+    <!-- 主要内容区 -->
+    <main class="max-w-4xl mx-auto pt-40 pb-20">
+        <div class="hero-container" id="heroList">
+            <!-- 英雄卡片将通过JavaScript动态生成 -->
+        </div>
+    </main>
+
+    <!-- 底部导航栏 -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-white/80 glass-effect border-t border-gray-200">
+        <div class="max-w-4xl mx-auto px-4 py-2">
+            <div class="flex justify-around items-center">
+                <a href="#" class="text-blue-500 flex flex-col items-center">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="text-xs mt-1">首页</span>
+                </a>
+                <a href="#" class="text-gray-400 flex flex-col items-center">
+                    <i class="fas fa-compass text-xl"></i>
+                    <span class="text-xs mt-1">发现</span>
+                </a>
+                <a href="#" class="text-gray-400 flex flex-col items-center">
+                    <i class="fas fa-star text-xl"></i>
+                    <span class="text-xs mt-1">收藏</span>
+                </a>
+                <a href="#" class="text-gray-400 flex flex-col items-center">
+                    <i class="fas fa-user text-xl"></i>
+                    <span class="text-xs mt-1">我的</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 获取英雄列表数据
+        async function fetchHeroes() {
+            try {
+                const response = await fetch('https://hmajax.itheima.net/api/lol/search');
+                const data = await response.json();
+                if (data.code === 200) {
+                    return data.data;
+                }
+                throw new Error('获取数据失败');
+            } catch (error) {
+                console.error('获取英雄列表失败:', error);
+                return [];
+            }
+        }
+
+        // 播放英雄语音
+        function playHeroVoice(audioUrl) {
+            const audio = new Audio(audioUrl);
+            audio.play().catch(error => console.error('播放语音失败:', error));
+        }
+
+        // 创建英雄卡片
+        function createHeroCard(hero) {
+            const card = document.createElement('div');
+            card.className = 'hero-card bg-white rounded-2xl overflow-hidden shadow-sm cursor-pointer';
+            card.innerHTML = `
+                <div class="relative" onclick="playHeroVoice('${hero.selectAudio}')">
+                    <img src="${hero.icon}" alt="${hero.name}" class="hero-image w-full h-32 object-cover">
+                    <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
+                        <p class="text-white font-medium text-sm">${hero.title} ${hero.name}</p>
+                    </div>
+                </div>
+                <div class="p-3">
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-blue-500">${hero.roles.join('/')}</span>
+                        <span class="text-gray-500 cursor-pointer hover:text-blue-500 transition-colors" 
+                            onclick="window.location.href='yq.html?id=${hero.heroId}'">
+                            难度 ${'★'.repeat(Math.min(Math.round(hero.difficulty/2), 5))}
+                        </span>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        // 过滤英雄
+        function filterHeroes(heroes, searchText, selectedRole) {
+            return heroes.filter(hero => {
+                const matchesSearch = searchText === '' || 
+                    hero.keywords.toLowerCase().includes(searchText.toLowerCase());
+                const matchesRole = selectedRole === 'all' || 
+                    hero.roles.some(role => role.toLowerCase() === selectedRole.toLowerCase());
+                return matchesSearch && matchesRole;
+            });
+        }
+
+        // 初始化页面
+        async function initializePage() {
+            const heroes = await fetchHeroes();
+            const heroList = document.getElementById('heroList');
+            const searchInput = document.getElementById('searchInput');
+            const roleFilter = document.getElementById('roleFilter');
+            let currentRole = 'all';
+
+            // 渲染英雄列表
+            function renderHeroes(filteredHeroes) {
+                heroList.innerHTML = '';
+                filteredHeroes.forEach(hero => {
+                    heroList.appendChild(createHeroCard(hero));
+                });
+            }
+
+            // 搜索事件处理
+            searchInput.addEventListener('input', () => {
+                const filteredHeroes = filterHeroes(heroes, searchInput.value, currentRole);
+                renderHeroes(filteredHeroes);
+            });
+
+            // 角色筛选事件处理
+            roleFilter.addEventListener('click', (e) => {
+                if (e.target.classList.contains('tag')) {
+                    const role = e.target.dataset.role;
+                    currentRole = role;
+                    
+                    // 更新标签样式
+                    roleFilter.querySelectorAll('.tag').forEach(tag => {
+                        tag.classList.remove('bg-blue-500', 'text-white');
+                        tag.classList.add('bg-gray-100', 'text-gray-600');
+                    });
+                    e.target.classList.remove('bg-gray-100', 'text-gray-600');
+                    e.target.classList.add('bg-blue-500', 'text-white');
+
+                    // 过滤并渲染英雄
+                    const filteredHeroes = filterHeroes(heroes, searchInput.value, role);
+                    renderHeroes(filteredHeroes);
+                }
+            });
+
+            // 初始渲染
+            renderHeroes(heroes);
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+
+    <script>
+        // 创建雪花
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.style.left = Math.random() * window.innerWidth + 'px';
+            snowflake.style.opacity = Math.random() * 0.6 + 0.4;
+            snowflake.style.fontSize = Math.random() * 14 + 8 + 'px';
+            snowflake.style.animationDuration = Math.random() * 3 + 4 + 's';
+            snowflake.innerHTML = '❄';
+            
+            // 添加水平飘动
+            const startPosition = parseFloat(snowflake.style.left);
+            const amplitude = 50; // 水平摆动幅度
+            const frequency = 2000; // 摆动周期
+            
+            let startTime = Date.now();
+            
+            function drift() {
+                const elapsed = Date.now() - startTime;
+                const newX = startPosition + Math.sin(elapsed / frequency * 2 * Math.PI) * amplitude;
+                snowflake.style.left = newX + 'px';
+                
+                if (snowflake.isConnected) {
+                    requestAnimationFrame(drift);
+                }
+            }
+            
+            requestAnimationFrame(drift);
+            
+            document.body.appendChild(snowflake);
+            
+            // 当雪花飘落到底部时移除
+            snowflake.addEventListener('animationend', () => snowflake.remove());
+        }
+
+        // 控制雪花生成频率
+        function startSnowfall() {
+            // 初始化时创建一些雪花
+            for (let i = 0; i < 20; i++) {
+                setTimeout(createSnowflake, Math.random() * 2000);
+            }
+            
+            // 持续创建新雪花
+            setInterval(createSnowflake, 200);
+        }
+
+        // 页面加载完成后启动雪花效果
+        document.addEventListener('DOMContentLoaded', startSnowfall);
+    </script>
+
+    <style>
+        /* 远古风格主题色 */
+        :root {
+            --primary-gold: #D4AF37;
+            --secondary-gold: #B8860B;
+            --dark-bronze: #614E1A;
+            --light-gold: #FFD700;
+            --ancient-bg: #1a1a1a;
+        }
+    
+        /* 页面背景 */
+        body {
+            background-color: var(--ancient-bg);
+            background-image: 
+                linear-gradient(rgba(26, 26, 26, 0.97), rgba(26, 26, 26, 0.97)),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23614E1A' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+    
+        /* 英雄卡片样式 */
+        .hero-card {
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            border: 2px solid var(--dark-bronze);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+    
+        .hero-card::before,
+        .hero-card::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, var(--primary-gold), transparent);
+            animation: borderRotate 4s linear infinite;
+        }
+    
+        .hero-card::before {
+            top: -50px;
+            left: -50px;
+        }
+    
+        .hero-card::after {
+            bottom: -50px;
+            right: -50px;
+            transform: rotate(180deg);
+        }
+    
+        @keyframes borderRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    
+        .hero-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+    
+        /* 英雄名称样式 */
+        .hero-name {
+            color: var(--primary-gold);
+            font-family: 'Noto Serif SC', serif;
+            text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+            position: relative;
+        }
+    
+        .hero-name::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary-gold), transparent);
+        }
+    
+        /* 标签和按钮样式 */
+        .tag {
+            background: linear-gradient(135deg, var(--dark-bronze) 0%, #2d2d2d 100%);
+            border: 1px solid var(--secondary-gold);
+            color: var(--primary-gold);
+            transition: all 0.3s ease;
+        }
+    
+        .tag:hover,
+        .tag.active {
+            background: linear-gradient(135deg, var(--primary-gold) 0%, var(--secondary-gold) 100%);
+            color: var(--ancient-bg);
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+    
+        /* 搜索框样式 */
+        #searchInput {
+            background: rgba(45, 45, 45, 0.8);
+            border: 1px solid var(--dark-bronze);
+            color: var(--primary-gold);
+            transition: all 0.3s ease;
+        }
+    
+        #searchInput:focus {
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+    
+        /* 装饰元素 */
+        .ancient-corner {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.5;
+        }
+    
+        .corner-tl { top: 0; left: 0; transform: rotate(0deg); }
+        .corner-tr { top: 0; right: 0; transform: rotate(90deg); }
+        .corner-bl { bottom: 0; left: 0; transform: rotate(270deg); }
+        .corner-br { bottom: 0; right: 0; transform: rotate(180deg); }
+    
+        .ancient-corner::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary-gold), transparent);
+            animation: cornerGlow 4s ease-in-out infinite;
+        }
+    
+        @keyframes cornerGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+
+    <!-- 添加装饰角落 -->
+    <div class="ancient-corner corner-tl"></div>
+    <div class="ancient-corner corner-tr"></div>
+    <div class="ancient-corner corner-bl"></div>
+    <div class="ancient-corner corner-br"></div>
+</body>
+</html>
